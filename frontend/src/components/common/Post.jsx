@@ -11,32 +11,26 @@ import { toast } from "react-hot-toast";
 import LoadingSpinner from "./LoadingSpinner";
 import { formatPostDate } from "../../utils/date";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const Post = ({ post }) => {
 	const [comment, setComment] = useState("");
 	const { data: authUser } = useQuery({ queryKey: ["authUser"] });
 	const queryClient = useQueryClient();
 	const postOwner = post.user;
 	const isLiked = post.likes.includes(authUser._id);
-
 	const isMyPost = authUser._id === post.user._id;
-
 	const formattedDate = formatPostDate(post.createdAt);
 
 	const { mutate: deletePost, isPending: isDeleting } = useMutation({
 		mutationFn: async () => {
-			try {
-				const res = await fetch(`/api/posts/${post._id}`, {
-					method: "DELETE",
-				});
-				const data = await res.json();
-
-				if (!res.ok) {
-					throw new Error(data.error || "Something went wrong");
-				}
-				return data;
-			} catch (error) {
-				throw new Error(error);
-			}
+			const res = await fetch(`${BASE_URL}/api/posts/${post._id}`, {
+				method: "DELETE",
+				credentials: "include",
+			});
+			const data = await res.json();
+			if (!res.ok) throw new Error(data.error || "Something went wrong");
+			return data;
 		},
 		onSuccess: () => {
 			toast.success("Post deleted successfully");
@@ -46,32 +40,18 @@ const Post = ({ post }) => {
 
 	const { mutate: likePost, isPending: isLiking } = useMutation({
 		mutationFn: async () => {
-			try {
-				const res = await fetch(`/api/posts/like/${post._id}`, {
-					method: "POST",
-				});
-				const data = await res.json();
-				if (!res.ok) {
-					throw new Error(data.error || "Something went wrong");
-				}
-				return data;
-			} catch (error) {
-				throw new Error(error);
-			}
+			const res = await fetch(`${BASE_URL}/api/posts/like/${post._id}`, {
+				method: "POST",
+				credentials: "include",
+			});
+			const data = await res.json();
+			if (!res.ok) throw new Error(data.error || "Something went wrong");
+			return data;
 		},
 		onSuccess: (updatedLikes) => {
-			// this is not the best UX, bc it will refetch all posts
-			// queryClient.invalidateQueries({ queryKey: ["posts"] });
-
-			// instead, update the cache directly for that post
-			queryClient.setQueryData(["posts"], (oldData) => {
-				return oldData.map((p) => {
-					if (p._id === post._id) {
-						return { ...p, likes: updatedLikes };
-					}
-					return p;
-				});
-			});
+			queryClient.setQueryData(["posts"], (oldData) =>
+				oldData.map((p) => (p._id === post._id ? { ...p, likes: updatedLikes } : p))
+			);
 		},
 		onError: (error) => {
 			toast.error(error.message);
@@ -80,23 +60,15 @@ const Post = ({ post }) => {
 
 	const { mutate: commentPost, isPending: isCommenting } = useMutation({
 		mutationFn: async () => {
-			try {
-				const res = await fetch(`/api/posts/comment/${post._id}`, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ text: comment }),
-				});
-				const data = await res.json();
-
-				if (!res.ok) {
-					throw new Error(data.error || "Something went wrong");
-				}
-				return data;
-			} catch (error) {
-				throw new Error(error);
-			}
+			const res = await fetch(`${BASE_URL}/api/posts/comment/${post._id}`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				credentials: "include",
+				body: JSON.stringify({ text: comment }),
+			});
+			const data = await res.json();
+			if (!res.ok) throw new Error(data.error || "Something went wrong");
+			return data;
 		},
 		onSuccess: () => {
 			toast.success("Comment posted successfully");
@@ -146,7 +118,6 @@ const Post = ({ post }) => {
 								{!isDeleting && (
 									<FaTrash className='cursor-pointer hover:text-red-500' onClick={handleDeletePost} />
 								)}
-
 								{isDeleting && <LoadingSpinner size='sm' />}
 							</span>
 						)}
@@ -172,7 +143,6 @@ const Post = ({ post }) => {
 									{post.comments.length}
 								</span>
 							</div>
-							{/* We're using Modal Component from DaisyUI */}
 							<dialog id={`comments_modal${post._id}`} className='modal border-none outline-none'>
 								<div className='modal-box rounded border border-gray-600'>
 									<h3 className='font-bold text-lg mb-4'>COMMENTS</h3>
@@ -186,17 +156,13 @@ const Post = ({ post }) => {
 											<div key={comment._id} className='flex gap-2 items-start'>
 												<div className='avatar'>
 													<div className='w-8 rounded-full'>
-														<img
-															src={comment.user.profileImg || "/avatar-placeholder.png"}
-														/>
+														<img src={comment.user.profileImg || "/avatar-placeholder.png"} />
 													</div>
 												</div>
 												<div className='flex flex-col'>
 													<div className='flex items-center gap-1'>
 														<span className='font-bold'>{comment.user.fullName}</span>
-														<span className='text-gray-700 text-sm'>
-															@{comment.user.username}
-														</span>
+														<span className='text-gray-700 text-sm'>@{comment.user.username}</span>
 													</div>
 													<div className='text-sm'>{comment.text}</div>
 												</div>
@@ -234,7 +200,6 @@ const Post = ({ post }) => {
 								{isLiked && !isLiking && (
 									<FaRegHeart className='w-4 h-4 cursor-pointer text-pink-500 ' />
 								)}
-
 								<span
 									className={`text-sm  group-hover:text-pink-500 ${
 										isLiked ? "text-pink-500" : "text-slate-500"
@@ -253,4 +218,5 @@ const Post = ({ post }) => {
 		</>
 	);
 };
+
 export default Post;

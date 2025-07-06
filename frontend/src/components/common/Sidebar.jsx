@@ -1,5 +1,4 @@
 import XSvg from "../svgs/X";
-
 import { MdHomeFilled } from "react-icons/md";
 import { IoNotifications } from "react-icons/io5";
 import { FaUser } from "react-icons/fa";
@@ -8,22 +7,19 @@ import { BiLogOut } from "react-icons/bi";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const Sidebar = () => {
 	const queryClient = useQueryClient();
+
 	const { mutate: logout } = useMutation({
 		mutationFn: async () => {
-			try {
-				const res = await fetch("/api/auth/logout", {
-					method: "POST",
-				});
-				const data = await res.json();
-
-				if (!res.ok) {
-					throw new Error(data.error || "Something went wrong");
-				}
-			} catch (error) {
-				throw new Error(error);
-			}
+			const res = await fetch(`${BASE_URL}/api/auth/logout`, {
+				method: "POST",
+				credentials: "include",
+			});
+			const data = await res.json();
+			if (!res.ok) throw new Error(data.error || "Something went wrong");
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["authUser"] });
@@ -32,6 +28,7 @@ const Sidebar = () => {
 			toast.error("Logout failed");
 		},
 	});
+
 	const { data: authUser } = useQuery({ queryKey: ["authUser"] });
 
 	return (
@@ -59,7 +56,6 @@ const Sidebar = () => {
 							<span className='text-lg hidden md:block'>Notifications</span>
 						</Link>
 					</li>
-
 					<li className='flex justify-center md:justify-start'>
 						<Link
 							to={`/profile/${authUser?.username}`}
@@ -99,4 +95,5 @@ const Sidebar = () => {
 		</div>
 	);
 };
+
 export default Sidebar;

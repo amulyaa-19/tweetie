@@ -5,6 +5,8 @@ import { IoCloseSharp } from "react-icons/io5";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const CreatePost = () => {
 	const [text, setText] = useState("");
 	const [img, setImg] = useState(null);
@@ -20,24 +22,20 @@ const CreatePost = () => {
 		error,
 	} = useMutation({
 		mutationFn: async ({ text, img }) => {
-			try {
-				const res = await fetch("/api/posts/create", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ text, img }),
-				});
-				const data = await res.json();
-				if (!res.ok) {
-					throw new Error(data.error || "Something went wrong");
-				}
-				return data;
-			} catch (error) {
-				throw new Error(error);
+			const res = await fetch(`${BASE_URL}/api/posts/create`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				credentials: "include",
+				body: JSON.stringify({ text, img }),
+			});
+			const data = await res.json();
+			if (!res.ok) {
+				throw new Error(data.error || "Something went wrong");
 			}
+			return data;
 		},
-
 		onSuccess: () => {
 			setText("");
 			setImg(null);
@@ -71,7 +69,7 @@ const CreatePost = () => {
 			</div>
 			<form className='flex flex-col gap-2 w-full' onSubmit={handleSubmit}>
 				<textarea
-					className='textarea w-full p-0 text-lg resize-none border-none focus:outline-none  border-gray-800'
+					className='textarea w-full p-0 text-lg resize-none border-none focus:outline-none border-gray-800'
 					placeholder='What is happening?!'
 					value={text}
 					onChange={(e) => setText(e.target.value)}
@@ -88,13 +86,9 @@ const CreatePost = () => {
 						<img src={img} className='w-full mx-auto h-72 object-contain rounded' />
 					</div>
 				)}
-
 				<div className='flex justify-between border-t py-2 border-t-gray-700'>
 					<div className='flex gap-1 items-center'>
-						<CiImageOn
-							className='fill-primary w-6 h-6 cursor-pointer'
-							onClick={() => imgRef.current.click()}
-						/>
+						<CiImageOn className='fill-primary w-6 h-6 cursor-pointer' onClick={() => imgRef.current.click()} />
 						<BsEmojiSmileFill className='fill-primary w-5 h-5 cursor-pointer' />
 					</div>
 					<input type='file' accept='image/*' hidden ref={imgRef} onChange={handleImgChange} />
@@ -107,4 +101,5 @@ const CreatePost = () => {
 		</div>
 	);
 };
+
 export default CreatePost;

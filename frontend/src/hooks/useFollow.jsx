@@ -1,24 +1,20 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const useFollow = () => {
 	const queryClient = useQueryClient();
 
 	const { mutate: follow, isPending } = useMutation({
 		mutationFn: async (userId) => {
-			try {
-				const res = await fetch(`/api/users/follow/${userId}`, {
-					method: "POST",
-				});
+			const res = await fetch(`${BASE_URL}/api/users/follow/${userId}`, {
+				method: "POST",
+				credentials: "include",
+			});
 
-				const data = await res.json();
-				if (!res.ok) {
-					throw new Error(data.error || "Something went wrong!");
-				}
-				return;
-			} catch (error) {
-				throw new Error(error.message);
-			}
+			const data = await res.json();
+			if (!res.ok) throw new Error(data.error || "Something went wrong!");
 		},
 		onSuccess: () => {
 			Promise.all([
