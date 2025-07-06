@@ -39,7 +39,7 @@ const ProfilePage = () => {
 		queryKey: ["userProfile"],
 		queryFn: async () => {
 			try {
-				const res = await fetch(`/api/users/profile/${username}`);
+				const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/profile/${username}`);
 				const data = await res.json();
 				if (!res.ok) {
 					throw new Error(data.error || "Something went wrong");
@@ -172,18 +172,15 @@ const ProfilePage = () => {
 								<div className='flex gap-2 flex-wrap'>
 									{user?.link && (
 										<div className='flex gap-1 items-center '>
-											<>
-												<FaLink className='w-3 h-3 text-slate-500' />
-												<a
-													href='https://youtube.com/@asaprogrammer_'
-													target='_blank'
-													rel='noreferrer'
-													className='text-sm text-blue-500 hover:underline'
-												>
-													{/* Updated this after recording the video. I forgot to update this while recording, sorry, thx. */}
-													{user?.link}
-												</a>
-											</>
+											<FaLink className='w-3 h-3 text-slate-500' />
+											<a
+												href={user?.link}
+												target='_blank'
+												rel='noreferrer'
+												className='text-sm text-blue-500 hover:underline'
+											>
+												{user?.link}
+											</a>
 										</div>
 									)}
 									<div className='flex gap-2 items-center'>
@@ -231,4 +228,5 @@ const ProfilePage = () => {
 		</>
 	);
 };
+
 export default ProfilePage;
