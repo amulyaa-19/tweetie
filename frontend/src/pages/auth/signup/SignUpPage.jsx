@@ -1,9 +1,8 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import XSvg from "../../../components/svgs/X";
-import { MdOutlineMail } from "react-icons/md";
+import { MdOutlineMail, MdPassword } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
-import { MdPassword } from "react-icons/md";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -31,7 +30,14 @@ const SignUpPage = () => {
 				body: JSON.stringify({ email, username, fullName, password }),
 			});
 
-			const data = await res.json();
+			const text = await res.text();
+			let data;
+			try {
+				data = JSON.parse(text);
+			} catch {
+				throw new Error("Server did not return valid JSON");
+			}
+
 			if (!res.ok) throw new Error(data.error || "Failed to create account");
 			return data;
 		},
@@ -68,6 +74,7 @@ const SignUpPage = () => {
 							name='email'
 							onChange={handleInputChange}
 							value={formData.email}
+							required
 						/>
 					</label>
 					<div className='flex gap-4 flex-wrap'>
@@ -80,6 +87,7 @@ const SignUpPage = () => {
 								name='username'
 								onChange={handleInputChange}
 								value={formData.username}
+								required
 							/>
 						</label>
 						<label className='input input-bordered rounded flex items-center gap-2 flex-1'>
@@ -91,6 +99,7 @@ const SignUpPage = () => {
 								name='fullName'
 								onChange={handleInputChange}
 								value={formData.fullName}
+								required
 							/>
 						</label>
 					</div>
@@ -103,6 +112,7 @@ const SignUpPage = () => {
 							name='password'
 							onChange={handleInputChange}
 							value={formData.password}
+							required
 						/>
 					</label>
 					<button className='btn rounded-full btn-primary text-white'>
