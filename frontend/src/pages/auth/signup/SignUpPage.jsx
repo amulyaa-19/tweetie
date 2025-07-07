@@ -22,7 +22,7 @@ const SignUpPage = () => {
 
 	const { mutate, isError, isPending, error } = useMutation({
 		mutationFn: async ({ email, username, fullName, password }) => {
-			const res = await fetch(${BASE_URL}/api/auth/signup, {
+			const res = await fetch(`${BASE_URL}/api/auth/signup`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
