@@ -11,7 +11,6 @@ import notificationRoutes from "./routes/notification.route.js";
 
 import connectMongoDB from "./db/connectMongoDB.js";
 
-
 dotenv.config();
 
 cloudinary.config({
@@ -23,13 +22,9 @@ cloudinary.config({
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-
 app.use(
   cors({
-    origin: ["https://tweetie-1.onrender.com",
-      "http://localhost:3000",
-      "http://127.0.0.1:3000"
-    ],
+    origin: ["https://tweetie-1.onrender.com", "http://localhost:3000"],
     credentials: true,
   })
 );
