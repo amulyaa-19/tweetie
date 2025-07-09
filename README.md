@@ -1,4 +1,4 @@
-# Tweetie — A Fullstack Social Media App
+# Tweetie — A Fullstack Social Media WebSite
 
 [![Live Website](https://img.shields.io/badge/Live%20Frontend-%F0%9F%9A%80-blue?style=for-the-badge)](https://tweetie-1.onrender.com)
 
