@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import XSvg from "../../../components/svgs/X";
+import TSvg from "../../../components/svgs/T";
 import { MdOutlineMail, MdPassword } from "react-icons/md";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
@@ -56,11 +56,11 @@ const LoginPage = () => {
   return (
     <div className='max-w-screen-xl mx-auto flex h-screen'>
       <div className='flex-1 hidden lg:flex items-center justify-center'>
-        <XSvg className='lg:w-2/3 fill-white' />
+        <TSvg className='lg:w-2/3 fill-white' />
       </div>
       <div className='flex-1 flex flex-col justify-center items-center'>
         <form className='flex gap-4 flex-col' onSubmit={handleSubmit}>
-          <XSvg className='w-24 lg:hidden fill-white' />
+          <TSvg className='w-24 lg:hidden fill-white' />
           <h1 className='text-4xl font-extrabold text-white'>{"Let's"} go.</h1>
           <label className='input input-bordered rounded flex items-center gap-2'>
             <MdOutlineMail />
